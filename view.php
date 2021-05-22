@@ -31,6 +31,10 @@
             .anchor{
                 margin-top:6em;
             }
+            p{
+                max-width:400px;
+                word-wrap:break-word;
+            }
         </style>
     </head>
     <body>
@@ -53,24 +57,50 @@
                 <p>Headline : <br><?php echo htmlentities($result["headline"]);?></p>
                 <p>Summary : <br><?php echo htmlentities($result["summary"]);?></p>
                 <?php
+                    $sql = "SELECT * FROM education where profile_id=:pid order by rank";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->execute(array(
+                        ":pid" => $_GET["profile_id"]
+                    ));
+                    $result1=$stmt->fetchAll(PDO::FETCH_ASSOC);
+                    if($result1!=false){
+                        echo " <p>Education : <br></p>";
+                        echo "<ul>";
+                        for($i=0;$i<count($result1);$i++){
+                            $sql = "SELECT name FROM institution where institution_id=:iid";
+                            $stmt = $pdo->prepare($sql);
+                            $stmt->execute(array(
+                                ":iid" => $result1[$i]["institution_id"]
+                            ));
+                            $result2=$stmt->fetch(PDO::FETCH_ASSOC);
+                            echo "<li style='margin-bottom:5px'>".$result1[$i]["year"].":".$result2["name"]."</li>";
+                        }
+                        echo "</ul>";
+                    }
+                ?>
+                
+                <?php
                     $sql = "SELECT * FROM position where profile_id=:pid order by rank";
                     $stmt = $pdo->prepare($sql);
                     $stmt->execute(array(
                         ":pid" => $_GET["profile_id"]
                     ));
                     $result1=$stmt->fetchAll(PDO::FETCH_ASSOC);
-                    echo "<ul>";
-                    for($i=0;$i<count($result1);$i++){
-                        echo "<li style='margin-bottom:5px'>".$result1[$i]["year"].":".$result1[$i]["description"]."</li>";
+                    if($result1!=false){
+                        echo " <p>Position : <br></p>";
+                        echo "<ul>";
+                        for($i=0;$i<count($result1);$i++){
+                            echo "<li style='margin-bottom:5px'>".$result1[$i]["year"].":".$result1[$i]["description"]."</li>";
+                        }
+                        echo "</ul>";
                     }
-                    echo "</ul>";
                 ?>
                 <a href="./index.php" style="color: #337ab7">Done</a>
             </td>
             <td>
             <?php if($result["image_path"]!=NULL){  
                     echo "<table class='anchor'><tr><td style='border: 1px solid black;width:150px; height:200px;text-align:center;border-radius: 50px 50px 50px 50px;'>";
-                    echo "<img src='./profile_pictures/".$result["image_name"]."' alt='no profile image' border=0 style='width:160px; height:210px;align:center;border-radius: 50px 50px 50px 50px;'/>";                            
+                    echo "<img src='../../Week4/profile_pictures/".$result["image_name"]."' alt='no profile image' border=0 style='width:160px; height:210px;align:center;border-radius: 50px 50px 50px 50px;'/>";                            
                     echo "</td>";
                     echo "</tr>";
                     echo "</table>";
