@@ -1,123 +1,52 @@
-<?php
-    $salt="XyZzy12*_";
-    require_once "pdo.php";
-    session_start();
-    if(isset($_POST["signup"])){
-        if(strlen($_POST["email"])>0&&strlen($_POST["pass"])>0&&strlen($_POST["uname"])>0){
-            if(strpos($_POST["email"],'@')!=FALSE){
-                $hash=hash("md5",$salt.$_POST["pass"]);
-                try{
-                    $sql = "INSERT into users (name,email,password) values(:nm,:em,:pw)";
-                    $stmt = $pdo->prepare($sql);
-                    $stmt->execute(array(
-                        ':nm' => $_POST["uname"],
-                        ':em' => $_POST["email"],
-                        ':pw' => $hash
-                    ));
-                }
-                catch(Exception $ex){
-                    $_Session["error"] = "Internal server error";
-                    error_log("sql_error=".$ex->getMessage());
-                    header("location:add.php");
-                    return;
-                }    
-                $_SESSION["status"] = "Account Created Please log in";
-                header("Location:./index.php");
-                return;
-            }
-            else{
-                $_SESSION["error"]="missing @";
-                header("location:./login.php");
-                return;
-            }
-        }
-        else{
-            $_SESSION["error"]="all fields must be filled";
-            header("location:./login.php");
-            return;
-        }
-    }
-?>
-
 <html>
     <head>
         <title>Harshdeep Singh</title>
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="HandheldFriendly" content="true">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
         <style>
-            .container {
-                padding-right: 15px;
-                padding-left: 15px;
-                margin-right: 400px;
-                margin-left: 160px;
-                margin-top: 70px; 
-            }
-            .family{
-                font-family:"sans-serif";
-                margin-bottom:5px;
-                margin-top:0px;
-            }
-            input{
-                height:27px;
-                margin-bottom:5px;
-            }
-            b{
-                font-size:18;
+            .a{
+                max-width:500px;
+                margin:auto;
+                margin-top:12%;
             }
         </style>
     </head>
     <body>
-        <div class=container>    
-            <h1>Please Sign Up</h1>
-            <pre style="color:red"><?php
-                    if(isset($_SESSION["error"])){
-                        echo $_SESSION["error"];
-                        unset($_SESSION["error"]);
-                    }
-                ?></pre>
-            <form href="login.php" method="POST">
-                <pre class=family><b>User Name  </b><input type="text" name="uname" id="uname"/><br></pre>
-                <pre class=family><b>Email  </b><input type="text" name="email" id="email"/><br></pre>
-                <pre class=family><b>Password  </b><input type="password" name="pass" id="pass"/><br></pre>
-                <input type="submit" name="signup" value="Sign Up" onclick="return doValidate();"/>
-                <input type="button" value="cancel" onclick="location.href = './index.php';"/>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="index.php" style="margin-left:1%">Resume Registry</a>
+      <div class="collapse navbar-collapse"> </div>
+      <a class="navbar-brand" href="login.php">Sign In</a>
+      </nav>
+      <div class='container-fluid'>
+        <div class='a'> 
+            <pre><h2>Sign Up</h2></pre>
+            <form method="POST" action="login.php">
+                <div class="form-group row">
+                <label for="inputEmail" class="col-sm-2 col-form-label">Username</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="who" id="inputEmail" placeholder="Email">
+                </div>
+                </div>
+                <br>
+                <div class="form-group row">
+                <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
+                <div class="col-sm-10">
+                    <input type="Email" class="form-control" name="mail" id="inputEmail" placeholder="Email">
+                </div>
+                </div>
+                <br>
+                <div class="form-group row">
+                <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
+                <div class="col-sm-10">
+                    <input type="password" class="form-control" name="pass" id="inputPassword" placeholder="Password">
+                </div>
+                </div>
+                <button type="submit" name="login" class="btn btn-primary btn-lg btn-block" style="margin-top:18px;width:6em">Sign Up</button>
+                <button type="button" class="btn btn-primary btn-lg btn-block" style="margin-left:10px;margin-top:18px;width:5em" onclick="location.href='./index.php'">Cancel</button>
             </form>
         </div>
-        <script>
-            function doValidate(){
-                try{
-                    console.log('Validating...');
-                    aw=document.getElementById("email").value;
-                    pw=document.getElementById("pass").value;
-                    uw=document.getElementById("uname").value;
-                    console.log("Validating email ="+aw);
-                    if(aw== null||aw=="")
-                    {
-                        alert("All fields must be filled out");
-                        return false;
-                    }
-                    if(aw.indexOf('@')==-1){
-                        alert("invalid email address");
-                        return false;
-                    }
-                    console.log("Validating password="+pw);
-                    if(pw== null||pw=="")
-                    {
-                        alert("All fields must be filled out");
-                        return false;
-                    }
-                    console.log("Validating username="+uw);
-                    if(uw== null||uw=="")
-                    {
-                        alert("All fields must be filled out");
-                        return false;
-                    }
-                    return true;
-                }
-                catch(e){
-                    alert(e);
-                    return false;
-                }
-                return false;
-            }
-        </script>
+      </div>
     </body>
 </html>
